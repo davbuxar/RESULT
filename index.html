@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>School Result Manager</title>
+<style>
+:root{--ink:#14233f;--bg:#eef2f7;--card:#fff;--line:#d5dce8;--acc:#d98a00;--ok:#1f8a54;--bad:#c23b3b;--tx:#1b2433}
+@media(prefers-color-scheme:dark){:root{--ink:#9db7ff;--bg:#0f1521;--card:#18202f;--line:#2b3750;--tx:#e6ebf5}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+h1,h2,h3{font-family:Georgia,serif;color:var(--ink);margin:.2em 0}
+header{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:5}
+header img{height:42px}header b{font:600 18px Georgia,serif}header span{margin-left:auto;font-size:13px}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 18px}
+nav button{background:var(--card);border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer;color:var(--tx);transition:.2s}
+nav button.on,nav button:hover{background:var(--acc);color:#fff;border-color:var(--acc);transform:translateY(-2px)}
+main{padding:0 18px 40px;max-width:1200px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:10px 0;animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--ink);font-weight:600}
+input,select,textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+input:disabled{opacity:.5}
+button.p{background:var(--ink);color:var(--bg);border:0;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600}
+button.p.g{background:var(--ok);color:#fff}button.p:hover{filter:brightness(1.15)}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}th{background:var(--bg)}
+.tw{overflow-x:auto}#toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:8px;color:#fff;display:none;z-index:9}
+#login{max-width:380px;margin:12vh auto}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:140px}.err{color:var(--bad)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><img id="logo" alt=""><b id="sn">School Result Manager</b><span id="who"></span></header>
+<main id="app"></main><div id="toast"></div>
+<script>
+// ====== SET THIS after deploying Code.gs as a Web app ======
+const API = "https://script.google.com/macros/s/AKfycbwaTCzNDhcTXIgPOosuEb1BtAOgcO6JlcmZhDL205CzcgHlTOKT9iW6cCR3e7BTrWkK/exec";
+// ===========================================================
+const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S = {token:null,user:null,cfg:{},lists:{subjects:[],teachers:[]}};
+const CLASSES=['Nursery','LKG','UKG','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+const EXAMS=["Preodic TEST - 1","Preodic TEST - 2","Preodic TEST - 3","Preodic TEST - 4","Pre-Board (First) Examination","Pre-Board (Second) Examination","Midterm Examination","Term -1 Examination","Annual Examination"];
+const MONTHS=['April','May','June','July','August','September','October','November','December','January','February','March'];
+const priv = () => ['Admin','Examination','Class'].includes(S.user.role);
+function toast(m, ok=true){const t=$('#toast');t.textContent=m;t.style.background=ok?'var(--ok)':'var(--bad)';t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
+async function api(action, data={}){
+  const r = await fetch(API,{method:'POST',body:JSON.stringify({action,token:S.token,...data})}); // text/plain avoids CORS preflight
+  const j = await r.json(); if(j.expired){logout('Session expired, login again.');throw 0}
+  if(!j.ok){toast(j.error,false);throw new Error(j.error)} return j;
+}
+const opts=(a,sel)=>a.map(x=>`<option ${x==sel?'selected':''}>${esc(x)}</option>`).join('');
+function logout(msg){S.token=null;S.user=null;$('#who').textContent='';renderLogin(msg)}
+function renderLogin(msg=''){ $('#app').innerHTML=`<div class="card" id="login"><h2>Sign in</h2><p class="err">${esc(msg)}</p>
+<label>User ID<input id="u"></label><br><label>Password<input id="p" type="password"></label><br><button class="p" id="go">Login</button></div>`;
+ $('#go').onclick=async()=>{try{const j=await api('login',{id:$('#u').value,password:$('#p').value});
+  S.token=j.token;S.user=j.user;S.cfg=j.config;$('#sn').textContent=S.cfg.school_name||'School';if(S.cfg.logo)$('#logo').src=S.cfg.logo;
+  $('#who').textContent=`${S.user.name} (${S.user.role})`; S.lists=await api('lists');
+  S.user.must_change?renderPwd():renderHome()}catch(e){}}}
+function renderPwd(){ $('#app').innerHTML=`<div class="card" id="login"><h2>Change password</h2><p>You must set a new password before continuing.</p>
+<label>New password (min 6)<input id="n" type="password"></label><br><button class="p" id="go">Change</button></div>`;
+ $('#go').onclick=async()=>{if($('#n').value.length<6)return toast('Min 6 characters',false);
+  await api('changePassword',{newPassword:$('#n').value});logout('Password is changed, please relogin to verify that.')}}
+const VIEWS={students:'Students',att:'Attendance',exam:'Create Exam',marks:'Marks Entry'};
+function renderHome(){ $('#app').innerHTML=`<nav>${Object.entries(VIEWS).filter(([k])=>priv()||k==='marks').map(([k,v])=>`<button data-k="${k}">${v}</button>`).join('')}<button id="lo">Logout</button></nav><div id="v"></div>`;
+ document.querySelectorAll('nav [data-k]').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');V[b.dataset.k]()});
+ $('#lo').onclick=()=>logout();(priv()?V.students:V.marks)()}
+const V={};
+// ---------- Students ----------
+const F=[['adm','Admission No*','num'],['class_roll','Class Roll No','num'],['exam_roll','Exam Roll No (Exam/Admin only)','num'],['adm_date','Admission date*','text'],['name','Name*','az'],['father','Father name*','az'],['mother','Mother name*','az'],['dob','DOB (DD-MM-YYYY)*','text'],['class','Class*',CLASSES],['section','Section (max 2)','sec'],['blood','Blood group',['A+','A-','B+','B-','AB+','AB-','O+','O-']],['height','Height cm*','num'],['weight','Weight kg*','text'],['house','House*',['Red','Green','Yellow','Blue']],['transport','Transport*',['School Bus','Bycycle','VAN','With Family Member','Pedestrian']],['bus_no','Bus number','text'],['stop','Stoppage/Location*','text'],['address','Address + Pincode','text'],['pen','PEN (12 digit)','num'],['aapar','AAPAR no.','num'],['aadhar_s','Student Aadhar','text'],['aadhar_f','Father Aadhar','text'],['aadhar_m','Mother Aadhar','text'],['status','Status',['Active','TC','Abscording']]];
+V.students=()=>{ $('#v').innerHTML=`<div class="card"><h3>Students</h3><div class="row"><label>Class<select id="fc"><option value="">All</option>${opts(CLASSES)}</select></label><label>Section<input id="fs" maxlength="2"></label>
+<button class="p" id="ld">Load list</button><button class="p g" id="nw">Add student</button><label>Import CSV<input type="file" id="im" accept=".csv"></label></div></div><div id="sl"></div><div id="sf"></div>`;
+ $('#ld').onclick=async()=>{const j=await api('students',{class:$('#fc').value,section:$('#fs').value.toUpperCase()});
+  $('#sl').innerHTML=`<div class="card tw"><table><tr><th>Adm</th><th>Name</th><th>Class</th><th>Roll</th><th></th></tr>${j.students.map(s=>`<tr><td>${esc(s.adm)}</td><td>${esc(s.name)}</td><td>${esc(s.class)} ${esc(s.section)}</td><td>${esc(s.exam_roll)}</td><td><button class="p" data-a="${esc(s.adm)}">Edit</button></td></tr>`).join('')}</table></div>`;
+  document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>form(j.students.find(s=>s.adm==b.dataset.a)))};
+ $('#nw').onclick=()=>form({status:'Active'});
+ $('#im').onchange=async e=>{const t=await e.target.files[0].text(),[h,...r]=t.trim().split(/\r?\n/),k=h.split(',').map(x=>x.trim()); // header names = field keys
+  const st=r.map(l=>{const c=l.split(',');const o={};k.forEach((x,i)=>o[x]=(c[i]||'').trim());o.status=o.status||'Active';return o});
+  const j=await api('importStudents',{students:st});toast(`Imported ${st.length-j.failed.length}, failed rows: ${j.failed.join(',')||'none'}`)}};
+function form(s){ const isEx=['Admin','Examination'].includes(S.user.role);
+ $('#sf').innerHTML=`<div class="card"><h3>Student details</h3>${s.adm?'':'<div class="row"><label>Fetch by admission no.<input id="fa"></label><button class="p" id="fx">Fetch</button></div>'}<div class="grid" id="fg">${F.map(([k,l,t])=>`<label>${l}${Array.isArray(t)?`<select data-k="${k}"><option></option>${opts(t,s[k])}</select>`:`<input data-k="${k}" value="${esc(s[k])}" ${k==='exam_roll'&&!isEx?'disabled':''}>`}</label>`).join('')}</div>
+ <p><label><input type="checkbox" id="pn" style="width:auto"> Not on UDISE+ (PEN not available)</label></p>
+ <label>Photo (saved to IMAGE/&lt;adm&gt;)<input type="file" id="ph" accept="image/*"></label><br><button class="p g" id="sv">Save</button></div>`;
+ const fix=()=>{const g=k=>document.querySelector(`[data-k=${k}]`);g('pen').disabled=$('#pn').checked;g('aapar').disabled=!g('pen').value&&!$('#pn').checked||$('#pn').checked};
+ $('#pn').onchange=fix;
+ $('#fg').oninput=e=>{const k=e.target.dataset.k,t=F.find(f=>f[0]===k)?.[2];if(t==='num')e.target.value=e.target.value.replace(/\D/g,'');if(t==='az')e.target.value=e.target.value.replace(/[^A-Za-z ]/g,'').toUpperCase();if(t==='sec')e.target.value=e.target.value.toUpperCase().slice(0,2);if(k==='pen')e.target.value=e.target.value.slice(0,12)};
+ if($('#fx'))$('#fx').onclick=async()=>{const j=await api('student',{adm:$('#fa').value});if(j.student)form(j.student);else toast('Not found, fill new',false)};
+ $('#sv').onclick=async()=>{const o={};document.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value);o.pen_na=$('#pn').checked?'yes':'';
+  for(const r of ['adm','adm_date','name','father','mother','dob','class','height','weight','house','transport','stop'])if(!o[r])return toast('Required: '+r,false);
+  await api('saveStudent',{student:o});const f=$('#ph').files[0];
+  if(f){const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});await api('upload',{folder:'IMAGE',filename:o.adm+'.'+f.name.split('.').pop(),mime:f.type,data:d})}
+  toast('Saved');$('#sf').innerHTML=''}}
+// ---------- Attendance ----------
+V.att=()=>{ $('#v').innerHTML=`<div class="card"><div class="row"><label>Class<select id="c">${opts(CLASSES)}</select></label><label>Section<input id="s" maxlength="2"></label><label>Month<select id="m">${opts(MONTHS)}</select></label><label>Total working days<input id="w" type="number" min="0"></label><button class="p" id="ld">Load</button></div></div><div id="t"></div>`;
+ $('#ld').onclick=async()=>{const [a,b]=await Promise.all([api('students',{class:$('#c').value,section:$('#s').value.toUpperCase()}),api('getAttendance',{month:$('#m').value})]);
+  const m={};b.items.forEach(x=>m[x.adm]=x.present);
+  $('#t').innerHTML=`<div class="card tw"><table><tr><th>Class roll</th><th>Adm</th><th>Name</th><th>Present</th></tr>${a.students.map(s=>`<tr><td>${esc(s.class_roll)}</td><td>${esc(s.adm)}</td><td>${esc(s.name)}</td><td><input type="number" min="0" data-a="${esc(s.adm)}" value="${esc(m[s.adm])}"></td></tr>`).join('')}</table><br><button class="p g" id="sv">Save attendance</button></div>`;
+  $('#sv').onclick=async()=>{const w=+$('#w').value,items=[];for(const i of document.querySelectorAll('[data-a]')){if(i.value==='')continue;if(+i.value>w)return toast('Present exceeds working days',false);items.push({adm:i.dataset.a,month:$('#m').value,working:w,present:i.value})}
+   await api('saveAttendance',{items});toast('Saved')}}}
+// ---------- Create exam ----------
+V.exam=()=>{ const row=i=>`<tr><td>${i}</td><td><select data-n>${'<option></option>'+opts(S.lists.subjects)}</select></td><td><input type="number" data-f></td><td><input type="date" data-d></td><td><select data-t>${opts(['Marks','Grade'])}</select></td><td><select data-a>${opts(['Yes','No'])}</select></td><td><select data-te><option></option>${opts(S.lists.teachers)}</select></td></tr>`;
+ $('#v').innerHTML=`<div class="card"><h3>Create exam</h3><div class="row"><label>Exam<select id="e">${opts(EXAMS)}</select></label><label>Class<select id="c">${opts(CLASSES)}</select></label><label>Section<input id="s" maxlength="2"></label></div>
+ <div class="tw"><table><tr><th>#</th><th>Paper</th><th>Full marks</th><th>Date</th><th>Type</th><th>Add total</th><th>Teacher</th></tr>${[1,2,3,4,5,6,7,8].map(row).join('')}</table></div><br><button class="p g" id="sv">Save exam</button></div>`;
+ $('#sv').onclick=async()=>{const papers=[...document.querySelectorAll('tr')].slice(1).map(r=>({name:r.querySelector('[data-n]')?.value,full:r.querySelector('[data-f]')?.value,date:r.querySelector('[data-d]')?.value,type:r.querySelector('[data-t]')?.value,add:r.querySelector('[data-a]')?.value,teacher:r.querySelector('[data-te]')?.value})).filter(p=>p.name);
+  if(!papers.length||papers.some(p=>!p.full))return toast('Add papers with full marks',false);
+  await api('saveExam',{exam:$('#e').value,class:$('#c').value,section:$('#s').value.toUpperCase(),papers});toast('Exam saved')}};
+// ---------- Marks entry ----------
+V.marks=()=>{ $('#v').innerHTML=`<div class="card"><h3>Marks entry</h3><div class="row"><label>Class<select id="c">${opts(CLASSES)}</select></label><label>Section<input id="s" maxlength="2"></label><button class="p" id="ld">Find exams</button></div><div id="x"></div></div><div id="t"></div>`;
+ $('#ld').onclick=async()=>{const j=await api('exams',{class:$('#c').value,section:$('#s').value.toUpperCase()});
+  const mine=j.exams.map(e=>({...e,papers:e.papers.filter(p=>priv()||p.teacher===S.user.name)})).filter(e=>e.papers.length);
+  if(!mine.length)return $('#x').innerHTML='<p>No exam/subject assigned.</p>';
+  $('#x').innerHTML=`<div class="row"><label>Exam<select id="e">${opts(mine.map(e=>e.exam))}</select></label><label>Subject<select id="sb"></select></label><button class="p" id="go">Open</button></div>`;
+  const fill=()=>{$('#sb').innerHTML=opts(mine.find(e=>e.exam===$('#e').value).papers.map(p=>p.name))};fill();$('#e').onchange=fill;
+  $('#go').onclick=async()=>{const ex=mine.find(e=>e.exam===$('#e').value),p=ex.papers.find(x=>x.name===$('#sb').value);
+   const m=await api('getMarks',{exam:ex.exam,class:$('#c').value,section:$('#s').value.toUpperCase(),subject:p.name}),locked=m.marks.some(x=>x.state==='Submitted');
+   const roll=(v='',a='',n='',mk='')=>`<tr><td></td><td><input class="r" value="${esc(v)}" ${locked?'disabled':''}></td><td class="a">${esc(a)}</td><td class="n">${esc(n)}</td><td><input class="k" value="${esc(mk)}" ${locked?'disabled':''}></td></tr>`;
+   const base=m.marks.length?m.marks.map(x=>roll(x.exam_roll,x.adm,'',x.marks)).join(''):''; 
+   $('#t').innerHTML=`<div class="card"><b>${esc(p.name)}</b> — full marks ${esc(p.full)} ${locked?'<span class="err">(Submitted - locked)</span>':''}<div class="tw"><table id="mt"><tr><th>S/N</th><th>Exam roll</th><th>Adm</th><th>Name</th><th>Marks / AB</th></tr>${base}</table></div>
+   ${locked?'':'<br><button class="p" id="ad">+ Add row</button> <button class="p" id="sa">Save</button> <button class="p g" id="su">Submit (final)</button>'}</div>`;
+   const num=()=>document.querySelectorAll('#mt tr:not(:first-child)').forEach((r,i)=>r.firstElementChild.textContent=i+1);num();
+   const look=async r=>{const v=r.querySelector('.r').value;if(!v)return;const j=await api('lookupRoll',{class:$('#c').value,section:$('#s').value.toUpperCase(),roll:v});r.querySelector('.a').textContent=j.student?.adm||'?';r.querySelector('.n').textContent=j.student?.name||'Not found'};
+   document.querySelectorAll('#mt .r').forEach(i=>look(i.closest('tr')));
+   if(locked)return;
+   $('#ad').onclick=()=>{$('#mt').insertAdjacentHTML('beforeend',roll());num()};
+   $('#mt').onchange=e=>{if(e.target.classList.contains('r'))look(e.target.closest('tr'))};
+   const send=async submit=>{const rows=[...document.querySelectorAll('#mt tr:not(:first-child)')].map(r=>({exam_roll:r.querySelector('.r').value,adm:r.querySelector('.a').textContent,marks:r.querySelector('.k').value})).filter(r=>r.exam_roll&&r.marks!=='');
+    if(rows.some(r=>r.adm==='?'||!r.adm))return toast('Fix unknown roll numbers',false);
+    if(submit&&!confirm('After submit no edits are possible. Continue?'))return;
+    await api('saveMarks',{exam:ex.exam,class:$('#c').value,section:$('#s').value.toUpperCase(),subject:p.name,rows,submit});toast(submit?'Submitted':'Saved');if(submit)$('#go').click()};
+   $('#sa').onclick=()=>send(false);$('#su').onclick=()=>send(true)}}};
+renderLogin();
+</script></body></html>
