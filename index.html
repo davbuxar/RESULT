@@ -2,31 +2,44 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>School Result Manager</title>
 <style>
-:root{--ink:#14233f;--bg:#eef2f7;--card:#fff;--line:#d5dce8;--acc:#d98a00;--ok:#1f8a54;--bad:#c23b3b;--tx:#1b2433}
-@media(prefers-color-scheme:dark){:root{--ink:#9db7ff;--bg:#0f1521;--card:#18202f;--line:#2b3750;--tx:#e6ebf5}}
-*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+:root{--ink:#3b2fd6;--bg:#f2f4ff;--card:#fff;--line:#e0e4f5;--acc:#ff8a3d;--ok:#12a676;--bad:#e5484d;--tx:#1d2140;--g:linear-gradient(135deg,#3b2fd6,#8a4dff 60%,#ff6fb1)}
+@media(prefers-color-scheme:dark){:root{--ink:#a9a2ff;--bg:#0e1020;--card:#181b33;--line:#2a2e52;--tx:#e9ebff}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
 h1,h2,h3{font-family:Georgia,serif;color:var(--ink);margin:.2em 0}
-header{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:5}
-header img{height:42px}header b{font:600 18px Georgia,serif}header span{margin-left:auto;font-size:13px}
-nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 18px}
-nav button{background:var(--card);border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer;color:var(--tx);transition:.2s}
-nav button.on,nav button:hover{background:var(--acc);color:#fff;border-color:var(--acc);transform:translateY(-2px)}
-main{padding:0 18px 40px;max-width:1200px;margin:auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:10px 0;animation:in .3s}
-@keyframes in{from{opacity:0;transform:translateY(8px)}}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-label{display:block;font-size:12px;color:var(--ink);font-weight:600}
-input,select,textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
-input:disabled{opacity:.5}
-button.p{background:var(--ink);color:var(--bg);border:0;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600}
-button.p.g{background:var(--ok);color:#fff}button.p:hover{filter:brightness(1.15)}
-table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}th{background:var(--bg)}
-.tw{overflow-x:auto}#toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:8px;color:#fff;display:none;z-index:9}
-#login{max-width:380px;margin:12vh auto}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:140px}.err{color:var(--bad)}
+header{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--g);color:#fff;position:sticky;top:0;z-index:5;border-radius:0 0 22px 22px;box-shadow:0 6px 24px #3b2fd655}
+header img{height:40px;border-radius:50%;background:#fff}header b{font:700 17px Georgia,serif}header span{margin-left:auto;font-size:12px;opacity:.9;text-align:right}
+nav{display:flex;gap:6px;overflow-x:auto;padding:12px 14px}
+nav button{flex:1;white-space:nowrap;background:var(--card);border:1px solid var(--line);padding:10px 12px;border-radius:14px;cursor:pointer;color:var(--tx);font-size:13px;transition:.25s}
+nav button.on{background:var(--g);color:#fff;border-color:transparent;transform:translateY(-3px) scale(1.04);box-shadow:0 8px 18px #3b2fd655}
+main{padding:0 14px 40px;max-width:1100px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;animation:in .45s both;box-shadow:0 4px 18px #3b2fd61a}
+@keyframes in{from{opacity:0;transform:translateY(18px) scale(.97)}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+label{display:block;font-size:12px;color:var(--ink);font-weight:700}
+input,select,textarea{width:100%;padding:10px;margin-top:3px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--tx);font:inherit;transition:.2s}
+input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 4px #3b2fd622}input:disabled{opacity:.5}
+button.p{background:var(--ink);color:#fff;border:0;padding:11px 20px;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s}
+button.p.g{background:var(--g)}button.p:active{transform:scale(.94)}button.p:hover{filter:brightness(1.12)}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}th{background:var(--bg)}
+.tw{overflow-x:auto}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:130px}
+#login{max-width:380px;margin:9vh auto;text-align:center}.err{color:var(--bad)}
+.stat{background:var(--g);color:#fff;border-radius:18px;padding:18px;text-align:center;animation:in .5s both}.stat b{font-size:34px;display:block}
+#ov{position:fixed;inset:0;background:#0b0d2299;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50}
+#ov .bx{background:var(--card);border-radius:24px;padding:26px;max-width:320px;width:86%;text-align:center;animation:pop .35s both;box-shadow:0 20px 60px #0008}
+@keyframes pop{from{opacity:0;transform:scale(.6) rotate(-4deg)}}
+.ic{font-size:46px;animation:bounce 1s infinite}@keyframes bounce{50%{transform:translateY(-8px)}}
+.sp{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;border:6px solid var(--line);border-top-color:var(--ink);border-right-color:var(--acc);animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:12px}.bar i{display:block;height:100%;width:40%;background:var(--g);animation:slide 1.1s infinite}@keyframes slide{from{margin-left:-40%}to{margin-left:100%}}
+#pa{display:none}
+@media(max-width:700px){nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);z-index:6;padding:8px;border-radius:20px 20px 0 0}main{padding-bottom:90px}}
+@media print{@page{size:A4;margin:8mm}body>*:not(#pa){display:none!important}#pa{display:block!important}body{background:#fff;color:#000}
+.pg{page-break-after:always;break-after:page;font-family:Arial,sans-serif;color:#000;font-size:11px}.pg table td,.pg table th{border:1px solid #000;padding:3px;color:#000;background:none}.ph{text-align:center;margin-bottom:4px}
+.gx{display:grid;gap:6px;height:280mm}.g2{grid-template-columns:1fr;grid-template-rows:repeat(2,1fr)}.g4{grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,1fr)}.g6{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr)}.g8{grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);font-size:8px}
+.ad{border:1.5px solid #000;padding:5px;overflow:hidden;position:relative}.ad .qr{position:absolute;right:5px;bottom:20px}.ad table{width:62%}.g8 .ad td,.g6 .ad td{padding:1px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style></head><body>
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body>
 <header><img id="logo" alt=""><b id="sn">School Result Manager</b><span id="who"></span></header>
-<main id="app"></main><div id="toast"></div>
+<main id="app"></main><div id="ov"></div><div id="pa"></div>
 <script>
 // ====== SET THIS after deploying Code.gs as a Web app ======
 const API = "https://script.google.com/macros/s/AKfycbwaTCzNDhcTXIgPOosuEb1BtAOgcO6JlcmZhDL205CzcgHlTOKT9iW6cCR3e7BTrWkK/exec";
@@ -37,12 +50,18 @@ const CLASSES=['Nursery','LKG','UKG','I','II','III','IV','V','VI','VII','VIII','
 const EXAMS=["Preodic TEST - 1","Preodic TEST - 2","Preodic TEST - 3","Preodic TEST - 4","Pre-Board (First) Examination","Pre-Board (Second) Examination","Midterm Examination","Term -1 Examination","Annual Examination"];
 const MONTHS=['April','May','June','July','August','September','October','November','December','January','February','March'];
 const priv = () => ['Admin','Examination','Class'].includes(S.user.role);
-function toast(m, ok=true){const t=$('#toast');t.textContent=m;t.style.background=ok?'var(--ok)':'var(--bad)';t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
+function box(ic,t,msg,btns){return new Promise(r=>{const o=$('#ov');o.style.display='flex';o.innerHTML=`<div class="bx"><div class="ic">${ic}</div><h3>${esc(t)}</h3><p>${esc(msg||'')}</p>${btns?btns.map((b,i)=>`<button class="p ${i?'':'g'}" data-i="${i}" style="margin:4px">${b}</button>`).join(''):''}</div>`;o.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{o.style.display='none';r(+b.dataset.i==0)})})}
+function toast(m,ok=true){if(ok){box('🎉','Done',m);setTimeout(()=>{if($('#ov .ic')?.textContent==='🎉')$('#ov').style.display='none'},1700)}else box('⚠️','Oops',m,['OK'])}
+const ask=(t,m)=>box('🤔',t,m,['Yes, continue','Cancel']);
+function wait(m){const o=$('#ov');o.style.display='flex';o.innerHTML=`<div class="bx"><div class="sp"></div><h3>${esc(m)}</h3><p>Please wait, do not close this page…</p><div class="bar"><i></i></div></div>`}
+const WT={login:'Signing in…',saveStudent:'Saving student…',importStudents:'Importing students…',saveAttendance:'Saving attendance…',saveExam:'Saving exam…',upload:'Uploading file…',changePassword:'Updating password…'};
 async function api(action, data={}){
-  const r = await fetch(API,{method:'POST',body:JSON.stringify({action,token:S.token,...data})}); // text/plain avoids CORS preflight
-  const j = await r.json(); if(j.expired){logout('Session expired, login again.');throw 0}
-  if(!j.ok){toast(j.error,false);throw new Error(j.error)} return j;
-}
+  const quiet=['lookupRoll','lists'].includes(action);if(!quiet)wait(action==='saveMarks'?(data.submit?'Submitting marks…':'Saving marks…'):WT[action]||'Loading…');
+  try{const r=await fetch(API,{method:'POST',body:JSON.stringify({action,token:S.token,...data})});const j=await r.json();
+  if(!quiet)$('#ov').style.display='none';
+  if(j.expired){logout('Session expired, login again.');throw 0}
+  if(!j.ok){toast(j.error,false);throw new Error(j.error)}return j}
+  catch(e){if(!quiet)$('#ov').style.display='none';if(e instanceof TypeError)toast('Network problem. Check internet and retry.',false);throw e}}
 const opts=(a,sel)=>a.map(x=>`<option ${x==sel?'selected':''}>${esc(x)}</option>`).join('');
 function logout(msg){S.token=null;S.user=null;$('#who').textContent='';renderLogin(msg)}
 function renderLogin(msg=''){ $('#app').innerHTML=`<div class="card" id="login"><h2>Sign in</h2><p class="err">${esc(msg)}</p>
@@ -55,10 +74,10 @@ function renderPwd(){ $('#app').innerHTML=`<div class="card" id="login"><h2>Chan
 <label>New password (min 6)<input id="n" type="password"></label><br><button class="p" id="go">Change</button></div>`;
  $('#go').onclick=async()=>{if($('#n').value.length<6)return toast('Min 6 characters',false);
   await api('changePassword',{newPassword:$('#n').value});logout('Password is changed, please relogin to verify that.')}}
-const VIEWS={students:'Students',att:'Attendance',exam:'Create Exam',marks:'Marks Entry'};
-function renderHome(){ $('#app').innerHTML=`<nav>${Object.entries(VIEWS).filter(([k])=>priv()||k==='marks').map(([k,v])=>`<button data-k="${k}">${v}</button>`).join('')}<button id="lo">Logout</button></nav><div id="v"></div>`;
+const VIEWS={dash:'🏠 Home',students:'👨‍🎓 Students',att:'📅 Attendance',exam:'📝 Exam',marks:'✏️ Marks',reports:'🖨️ Reports'};
+function renderHome(){ $('#app').innerHTML=`<nav>${Object.entries(VIEWS).filter(([k])=>priv()||k==='marks').map(([k,v])=>`<button data-k="${k}">${v}</button>`).join('')}<button id="lo">🚪</button></nav><div id="v"></div>`;
  document.querySelectorAll('nav [data-k]').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');V[b.dataset.k]()});
- $('#lo').onclick=()=>logout();(priv()?V.students:V.marks)()}
+ $('#lo').onclick=()=>logout();(priv()?V.dash:V.marks)()}
 const V={};
 // ---------- Students ----------
 const F=[['adm','Admission No*','num'],['class_roll','Class Roll No','num'],['exam_roll','Exam Roll No (Exam/Admin only)','num'],['adm_date','Admission date*','text'],['name','Name*','az'],['father','Father name*','az'],['mother','Mother name*','az'],['dob','DOB (DD-MM-YYYY)*','text'],['class','Class*',CLASSES],['section','Section (max 2)','sec'],['blood','Blood group',['A+','A-','B+','B-','AB+','AB-','O+','O-']],['height','Height cm*','num'],['weight','Weight kg*','text'],['house','House*',['Red','Green','Yellow','Blue']],['transport','Transport*',['School Bus','Bycycle','VAN','With Family Member','Pedestrian']],['bus_no','Bus number','text'],['stop','Stoppage/Location*','text'],['address','Address + Pincode','text'],['pen','PEN (12 digit)','num'],['aapar','AAPAR no.','num'],['aadhar_s','Student Aadhar','text'],['aadhar_f','Father Aadhar','text'],['aadhar_m','Mother Aadhar','text'],['status','Status',['Active','TC','Abscording']]];
@@ -119,8 +138,31 @@ V.marks=()=>{ $('#v').innerHTML=`<div class="card"><h3>Marks entry</h3><div clas
    $('#mt').onchange=e=>{if(e.target.classList.contains('r'))look(e.target.closest('tr'))};
    const send=async submit=>{const rows=[...document.querySelectorAll('#mt tr:not(:first-child)')].map(r=>({exam_roll:r.querySelector('.r').value,adm:r.querySelector('.a').textContent,marks:r.querySelector('.k').value})).filter(r=>r.exam_roll&&r.marks!=='');
     if(rows.some(r=>r.adm==='?'||!r.adm))return toast('Fix unknown roll numbers',false);
-    if(submit&&!confirm('After submit no edits are possible. Continue?'))return;
+    if(submit&&!(await ask('Submit marks?','After submit no edits are possible.')))return;
     await api('saveMarks',{exam:ex.exam,class:$('#c').value,section:$('#s').value.toUpperCase(),subject:p.name,rows,submit});toast(submit?'Submitted':'Saved');if(submit)$('#go').click()};
    $('#sa').onclick=()=>send(false);$('#su').onclick=()=>send(true)}}};
+V.dash=async()=>{const j=await api('stats');$('#v').innerHTML=`<div class="card"><h3>Welcome, ${esc(S.user.name)} 👋</h3><p>Session ${esc(S.cfg.session)}</p></div><div class="grid">${[['Students',j.students],['Exams',j.exams],['Marks submitted',j.submitted],['Marks pending',j.saved]].map(([a,b])=>`<div class="stat"><b data-n="${b}">0</b>${a}</div>`).join('')}</div><div class="card"><h3>Students by class</h3>${Object.entries(j.byClass).map(([c,n])=>`<span class="stat" style="display:inline-block;margin:3px;padding:6px 14px;font-size:13px">${esc(c)}: ${n}</span>`).join('')||'No data'}</div>`;
+ document.querySelectorAll('[data-n]').forEach(e=>{let i=0,n=+e.dataset.n;const t=setInterval(()=>{i+=Math.max(1,n/25);if(i>=n){i=n;clearInterval(t)}e.textContent=Math.round(i)},30)})};
+const REP={list:'Student list',admit:'Admit cards (QR)',foil:'Marks foil (duplicate)',att:'Attendance sheet',promo:'Promotion list',card:'Report cards'};
+V.reports=()=>{$('#v').innerHTML=`<div class="card"><h3>🖨️ Reports</h3><div class="row"><label>Report<select id="rt">${Object.entries(REP).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label><label>Class<select id="c">${opts(CLASSES)}</select></label><label>Section<input id="s" maxlength="2"></label><label>Exam<select id="e">${opts(EXAMS)}</select></label><label>Admit cards / page<select id="n">${opts([2,4,6,8],6)}</select></label><label>Attendance photo<select id="ph">${opts(['Without photo','With photo'])}</select></label><label>Class roll from<input id="rf" type="number"></label><label>Class roll to<input id="rto" type="number"></label></div><br><button class="p g" id="go">Generate &amp; Print / Save PDF</button><p><small>Tip: in the print window choose “Save as PDF”, A4, margins default.</small></p></div>`;$('#go').onclick=gen};
+const GR=p=>p>=91?'A1':p>=81?'A2':p>=71?'B1':p>=61?'B2':p>=51?'C1':p>=41?'C2':p>=33?'D':'E';
+async function gen(){const t=$('#rt').value,c=$('#c').value,s=$('#s').value.toUpperCase(),e=$('#e').value;
+ let st=(await api('students',{class:c,section:s})).students.sort((a,b)=>(+a.class_roll||0)-(+b.class_roll||0));
+ const rf=+$('#rf').value,rt=+$('#rto').value;if(rf)st=st.filter(x=>+x.class_roll>=rf);if(rt)st=st.filter(x=>+x.class_roll<=rt);
+ if(!st.length)return toast('No students found',false);
+ const ex=(await api('exams',{class:c,section:s})).exams.find(x=>x.exam===e),P=ex?ex.papers:[];
+ if(t!=='list'&&!ex)return toast('Create this exam first (Exam tab).',false);
+ const M={};if(['promo','card'].includes(t))(await api('allMarks',{exam:e,class:c,section:s})).marks.forEach(m=>(M[m.adm]=M[m.adm]||{})[m.subject]=m.marks);
+ const hd=sub=>`<div class="ph"><b style="font-size:1.4em">${esc(S.cfg.school_name)}</b><br>${esc(S.cfg.address)}<br><b>${sub}</b></div>`,pg=x=>`<section class="pg">${x}</section>`,chunk=(a,n)=>a.reduce((r,x,i)=>(i%n?r[r.length-1].push(x):r.push([x]),r),[]);
+ const meta=`Class ${esc(c)} ${esc(s)} | ${esc(e)} | ${esc(S.cfg.session)}`;let h='',qr=[];
+ if(t==='list')h=chunk(st,35).map(a=>pg(hd('Student list - '+meta)+`<table><tr><th>S/N</th><th>Adm</th><th>Roll</th><th>Exam Roll</th><th>Name</th><th>Father</th><th>DOB</th></tr>${a.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.adm)}</td><td>${esc(x.class_roll)}</td><td>${esc(x.exam_roll)}</td><td>${esc(x.name)}</td><td>${esc(x.father)}</td><td>${esc(x.dob)}</td></tr>`).join('')}</table>`)).join('');
+ if(t==='admit'){const n=+$('#n').value;h=chunk(st,n).map(a=>pg(`<div class="gx g${n}">${a.map(x=>{qr.push(x);return`<div class="ad"><b>${esc(S.cfg.school_name)}</b><br><b>ADMIT CARD - ${esc(e)} (${esc(S.cfg.session)})</b><br>Roll: <b>${esc(x.exam_roll)}</b> | Class Roll: ${esc(x.class_roll)} | Adm: ${esc(x.adm)}<br>Name: <b>${esc(x.name)}</b><br>Father: ${esc(x.father)}<br>Mother: ${esc(x.mother)}<br>Class/Sec: ${esc(x.class)} ${esc(x.section)} | DOB ${esc(x.dob)}<table><tr><th>Subject</th><th>Date</th></tr>${P.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.date)}</td></tr>`).join('')}</table><div class="qr" id="q${x.adm}"></div><div style="position:absolute;bottom:3px;left:5px;right:5px;display:flex;justify-content:space-between"><span>Candidate</span><span>Parent</span><span>Principal</span></div></div>`}).join('')}</div>`)).join('')}
+ if(t==='foil')h=P.map(p=>[1,2].map(k=>chunk(st,30).map(a=>pg(hd(`MARKS FOIL (${k==1?'Original':'Duplicate'}) - ${esc(p.name)} (FM ${esc(p.full)})`)+meta+`<table><tr><th>S/N</th><th>Exam Roll</th><th>Adm</th><th>Name</th><th>Marks</th></tr>${a.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.exam_roll)}</td><td>${esc(x.adm)}</td><td>${esc(x.name)}</td><td style="width:70px"></td></tr>`).join('')}</table><br>Teacher: ${esc(p.teacher)} ______ Verifier ______`)).join('')).join('')).join('');
+ if(t==='att'){const ph=$('#ph').value==='With photo';h=chunk(st,ph?18:24).map((a,pi,all)=>pg(hd(`ATTENDANCE SHEET - ${meta} (Page ${pi+1}/${all.length})`)+`<table><tr><th>S/N</th><th>Adm</th><th>Roll</th>${ph?'<th>Photo</th>':''}<th>Name</th>${P.map(p=>`<th>${esc(p.name)}<br><small>${esc(p.date)}</small></th>`).join('')}</tr>${a.map((x,i)=>`<tr style="height:${ph?'38px':'26px'}"><td>${pi*(ph?18:24)+i+1}</td><td>${esc(x.adm)}</td><td>${esc(x.class_roll)}</td>${ph?'<td></td>':''}<td>${esc(x.name)}</td>${P.map(()=>'<td></td>').join('')}</tr>`).join('')}</table><br>Invigilator ______ I/C Exam ______ Principal ______`)).join('')}
+ const calc=x=>{let o=0,f=0,fail=false;const r=P.map(p=>{const v=(M[x.adm]||{})[p.name],n=v==='AB'||v===undefined?0:+v;if(p.add==='Yes'){o+=n;f+=+p.full}if(p.type==='Marks'&&n/ +p.full*100<33)fail=true;return{p,v:v===undefined?'-':v,n}});return{r,o,f,pc:f?o/f*100:0,fail}};
+ if(t==='promo'){const L=st.map(x=>({x,...calc(x)})).sort((a,b)=>b.pc-a.pc);h=chunk(L,32).map((a,pi)=>pg(hd('PROMOTION LIST - '+meta)+`<table><tr><th>S/N</th><th>Exam Roll</th><th>Adm</th><th>Name</th><th>Father</th><th>%</th><th>Rank</th><th>Remark</th></tr>${a.map((y,i)=>`<tr><td>${pi*32+i+1}</td><td>${esc(y.x.exam_roll)}</td><td>${esc(y.x.adm)}</td><td>${esc(y.x.name)}</td><td>${esc(y.x.father)}</td><td>${y.pc.toFixed(2)}</td><td>${pi*32+i+1}</td><td>${y.fail?'NOT PROMOTED':'PROMOTED'}</td></tr>`).join('')}</table>`)).join('')}
+ if(t==='card')h=st.map(x=>{const y=calc(x);return pg(hd('REPORT CARD - '+esc(e)+' ('+esc(S.cfg.session)+')')+`<table><tr><td>Name: <b>${esc(x.name)}</b></td><td>Adm: ${esc(x.adm)}</td></tr><tr><td>Father: ${esc(x.father)}</td><td>Class: ${esc(x.class)} ${esc(x.section)} | Roll ${esc(x.class_roll)}</td></tr><tr><td>Mother: ${esc(x.mother)}</td><td>DOB: ${esc(x.dob)}</td></tr></table><br><table><tr><th>Subject</th><th>Full</th><th>Obtained</th><th>Grade</th></tr>${y.r.map(z=>`<tr><td>${esc(z.p.name)}</td><td>${esc(z.p.full)}</td><td>${esc(z.v)}</td><td>${GR(z.n/+z.p.full*100)}</td></tr>`).join('')}<tr><th>Total</th><th>${y.f}</th><th>${y.o}</th><th>${GR(y.pc)}</th></tr></table><p>Percentage: <b>${y.pc.toFixed(2)}%</b> | Result: <b>${y.fail?'NEEDS IMPROVEMENT':'PASS'}</b></p><br><br>Class Teacher ______ &nbsp; Exam I/C ______ &nbsp; Principal ______`)}).join('');
+ $('#pa').innerHTML=h;qr.forEach(x=>{const e=document.getElementById('q'+x.adm);if(e&&window.QRCode)new QRCode(e,{text:`${x.adm}|${x.exam_roll}|${x.name}`,width:58,height:58})});
+ setTimeout(()=>window.print(),400)}
 renderLogin();
 </script></body></html>
