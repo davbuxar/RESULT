@@ -65,7 +65,7 @@ async function api(action, data={}){
 const opts=(a,sel)=>a.map(x=>`<option ${x==sel?'selected':''}>${esc(x)}</option>`).join('');
 function logout(msg){S.token=null;S.user=null;$('#who').textContent='';renderLogin(msg)}
 function renderLogin(msg=''){ $('#app').innerHTML=`<div class="card" id="login"><h2>Sign in</h2><p class="err">${esc(msg)}</p>
-<label>User ID<input id="u"></label><br><label>Password<input id="p" type="password"></label><br><button class="p" id="go">Login</button></div>`;
+<label>User I-d<input id="u"></label><br><label>Password<input id="p" type="password"></label><br><button class="p" id="go">Login</button></div>`;
  $('#go').onclick=async()=>{try{const j=await api('login',{id:$('#u').value,password:$('#p').value});
   S.token=j.token;S.user=j.user;S.cfg=j.config;$('#sn').textContent=S.cfg.school_name||'School';if(S.cfg.logo)$('#logo').src=S.cfg.logo;
   $('#who').textContent=`${S.user.name} (${S.user.role})`; S.lists=await api('lists');
