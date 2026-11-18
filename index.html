@@ -93,7 +93,7 @@ V.students=()=>{ $('#v').innerHTML=`<div class="card"><h3>Students</h3><div clas
 function form(s){ const isEx=['Admin','Examination'].includes(S.user.role);
  $('#sf').innerHTML=`<div class="card"><h3>Student details</h3>${s.adm?'':'<div class="row"><label>Fetch by admission no.<input id="fa"></label><button class="p" id="fx">Fetch</button></div>'}<div class="grid" id="fg">${F.map(([k,l,t])=>`<label>${l}${Array.isArray(t)?`<select data-k="${k}"><option></option>${opts(t,s[k])}</select>`:`<input data-k="${k}" value="${esc(s[k])}" ${k==='exam_roll'&&!isEx?'disabled':''}>`}</label>`).join('')}</div>
  <p><label><input type="checkbox" id="pn" style="width:auto"> Not on UDISE+ (PEN not available)</label></p>
- <label>Photo (saved to IMAGE/&lt;adm&gt;)<input type="file" id="ph" accept="image/*"></label><br><button class="p g" id="sv">Save</button></div>`;
+ <label>Photo (saved in Drive folder as &lt;adm&gt;)<input type="file" id="ph" accept="image/*"></label><br><button class="p g" id="sv">Save</button></div>`;
  const fix=()=>{const g=k=>document.querySelector(`[data-k=${k}]`);g('pen').disabled=$('#pn').checked;g('aapar').disabled=!g('pen').value&&!$('#pn').checked||$('#pn').checked};
  $('#pn').onchange=fix;
  $('#fg').oninput=e=>{const k=e.target.dataset.k,t=F.find(f=>f[0]===k)?.[2];if(t==='num')e.target.value=e.target.value.replace(/\D/g,'');if(t==='az')e.target.value=e.target.value.replace(/[^A-Za-z ]/g,'').toUpperCase();if(t==='sec')e.target.value=e.target.value.toUpperCase().slice(0,2);if(k==='pen')e.target.value=e.target.value.slice(0,12)};
@@ -101,7 +101,7 @@ function form(s){ const isEx=['Admin','Examination'].includes(S.user.role);
  $('#sv').onclick=async()=>{const o={};document.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value);o.pen_na=$('#pn').checked?'yes':'';
   for(const r of ['adm','adm_date','name','father','mother','dob','class','height','weight','house','transport','stop'])if(!o[r])return toast('Required: '+r,false);
   await api('saveStudent',{student:o});const f=$('#ph').files[0];
-  if(f){const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});await api('upload',{folder:'IMAGE',filename:o.adm+'.'+f.name.split('.').pop(),mime:f.type,data:d})}
+  if(f){const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});await api('upload',{filename:o.adm+'.'+f.name.split('.').pop(),mime:f.type,data:d,replace:true})}
   toast('Saved');$('#sf').innerHTML=''}}
 // ---------- Attendance ----------
 V.att=()=>{ $('#v').innerHTML=`<div class="card"><div class="row"><label>Class<select id="c">${opts(CLASSES)}</select></label><label>Section<input id="s" maxlength="2"></label><label>Month<select id="m">${opts(MONTHS)}</select></label><label>Total working days<input id="w" type="number" min="0"></label><button class="p" id="ld">Load</button></div></div><div id="t"></div>`;
@@ -186,7 +186,7 @@ V.cosch=()=>{$('#v').innerHTML=`<div class="card"><h3>🌈 Co-scholastic areas</
  $('#sg').onchange=()=>R.length&&draw();
  $('#ld').onclick=async()=>{k={term:$('#tm').value,class:$('#c').value,section:$('#s').value.toUpperCase()};const[r,m]=await Promise.all([api('roster',k),api('getCoSch',k)]);R=r.students.sort((a,b)=>a.class_roll-b.class_roll);C={};m.rows.forEach(x=>C[x.adm]=x.data);draw()}};
 // ---------- Signatures ----------
-V.sign=()=>{const L=[['PRINCIPAL','Principal'],['EXAM_IC','Examination I/C'],['TABULATOR','Tabulator']];$('#v').innerHTML=`<div class="card"><h3>🖋️ Signatures</h3><p>Saved in the IMAGE folder as SIGN_&lt;name&gt;.</p><div class="grid">${L.map(([k,n])=>`<div><label>${n}<input type="file" accept="image/*" data-k="${k}"></label></div>`).join('')}</div><br><button class="p g" id="up">Upload</button></div>`;
- $('#up').onclick=async()=>{let n=0;for(const i of document.querySelectorAll('[data-k]')){const f=i.files[0];if(!f)continue;const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});await api('upload',{folder:'IMAGE',filename:'SIGN_'+i.dataset.k+'.'+f.name.split('.').pop(),mime:f.type,data:d,replace:true});n++}toast(n?n+' signature(s) uploaded':'Choose a file first',!!n)}};
+V.sign=()=>{const L=[['PRINCIPAL','Principal'],['EXAM_IC','Examination I/C'],['TABULATOR','Tabulator']];$('#v').innerHTML=`<div class="card"><h3>🖋️ Signatures</h3><p>Saved in the same image folder as SIGN_&lt;name&gt;.</p><div class="grid">${L.map(([k,n])=>`<div><label>${n}<input type="file" accept="image/*" data-k="${k}"></label></div>`).join('')}</div><br><button class="p g" id="up">Upload</button></div>`;
+ $('#up').onclick=async()=>{let n=0;for(const i of document.querySelectorAll('[data-k]')){const f=i.files[0];if(!f)continue;const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});await api('upload',{filename:'SIGN_'+i.dataset.k+'.'+f.name.split('.').pop(),mime:f.type,data:d,replace:true});n++}toast(n?n+' signature(s) uploaded':'Choose a file first',!!n)}};
 renderLogin();
 </script></body></html>
